@@ -1,4 +1,4 @@
-#include "../util/network.h"
+#include "util/network.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,13 +10,13 @@ const char *semana[] = {"Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sa
 void getTime(char* fechaStr, char* horaStr)
 {
     time_t tiempo;
-    struct tm timeTm
+    struct tm* timeTm;
     tiempo = time(NULL);
 
     timeTm = localtime(&tiempo);
 
-    sprintf(fechaStr, "%s %d de %s del %d\n", semana[timeTm.tm_wday], tm_mday, meses[l_tm_mon], tm_año);
-    sprintf(horaStr, "%d:%d:%d", tm_hora, min_tmm, tm_seg);
+    sprintf(horaStr, "%d:%d:%d", timeTm->tm_hour, timeTm->tm_min, timeTm->tm_sec);
+    sprintf(fechaStr, "%s %d de %s del %d\n", semana[timeTm->tm_wday], timeTm->tm_mday, meses[timeTm->tm_mon], timeTm->tm_year + 1900);
 }
 
 int main(int argc, char **argv)
