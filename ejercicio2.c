@@ -3,8 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #define RECV_BUFF_SZ 1024
+#define CLIENT_TIMEOUT_SEC 3
 
 void reverseStr(char * str)
 {
@@ -30,28 +32,37 @@ int main(int argc, char **argv)
 
     int puerto = atoi(argv[1]);
 
-    while(1)
+    int mainSk = CreateServerSocket(puerto);
+    if(mainSk < 0)
     {
-        char recvBuff[RECV_BUFF_SZ];
-        int usedBuff; 
-
-        int mainSk = OpenServer(puerto);
-        if(mainSk < 0)
-        {
-            printf("Error iniciando servidor\n");
-            return -1;
-        }
-
-        usedBuff = recv(mainSk, recvBuff, RECV_BUFF_SZ, 0);
-        
-        recvBuff[usedBuff] = '\0';
-        reverseStr(recvBuff);
-        strcat(recvBuff, "\n");
-
-        send(mainSk, recvBuff, strlen(recvBuff), 0);
-
-        CloseServer(mainSk);
+        printf("Error iniciando servidor\n");
+        return -1;
     }
 
+    while(1){
+        int clientSk = AcceptClient(mainSk);
+        char recvBuff[RECV_BUFF_SZ];
+        int usedBuff; 
+        clock_t timeFlag = clock();
+        char disconnectMsj[] = "Conexion terminada";
+        while(1)
+        {
+            if(((clock()-timeFlag)/CLOCKS_PER_SEC)>CLIENT_TIMEOUT_SEC){
+                send(clientSk, disconnectMsj, strlen(disconnectMsj), 0);
+                CloseServer(clientSk);
+                break;
+            }
+
+            usedBuff = recv(clientSk, recvBuff, RECV_BUFF_SZ, MSG_DONTWAIT);
+
+            if(usedBuff>0){
+                recvBuff[usedBuff] = '\0';
+                reverseStr(recvBuff);
+                strcat(recvBuff, "\n");
+                send(clientSk, recvBuff, strlen(recvBuff), 0);
+                CloseServer(clientSk);
+            }
+        }
+    }
     return 0;
 }
