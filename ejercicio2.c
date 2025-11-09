@@ -15,7 +15,7 @@ void reverseStr(char * str)
 
     for(i=strlen(str)-1;i>=0;i--)
     {
-        if((str[i]!='\n')&&(str[i]!='\r'))
+        if(str[i]!='\n')
             revStr[strlen(str)-i-1]=str[i];
     }
     revStr[strlen(str)]='\0';
