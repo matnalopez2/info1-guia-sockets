@@ -6,7 +6,7 @@
 #include <time.h>
 
 #define RECV_BUFF_SZ 1024
-#define CLIENT_TIMEOUT_SEC 3
+#define CLIENT_TIMEOUT_SEC 300
 
 void reverseStr(char * str)
 {
@@ -61,6 +61,7 @@ int main(int argc, char **argv)
                 strcat(recvBuff, "\n");
                 send(clientSk, recvBuff, strlen(recvBuff), 0);
                 CloseServer(clientSk);
+                break;
             }
         }
     }
