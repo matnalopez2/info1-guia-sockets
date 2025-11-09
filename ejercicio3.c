@@ -7,7 +7,7 @@
 #include <pthread.h>
 
 #define RECV_BUFF_SZ 1024
-#define CLIENT_TIMEOUT_SEC 300
+#define CLIENT_TIMEOUT_SEC 10
 
 void reverseStr(char* str)
 {
@@ -16,7 +16,7 @@ void reverseStr(char* str)
 
     for(i=strlen(str)-1;i>=0;i--)
     {
-        if((str[i]!='\n')&&(str[i]!='\r'))
+        if(str[i]!='\n')
             revStr[strlen(str)-i-1]=str[i];
     }
     revStr[strlen(str)]='\0';
@@ -31,7 +31,7 @@ void* funcMain(void* clientSk)
     char disconnectMsj[RECV_BUFF_SZ];
     int boolMsj = 1;
     int sk = *(int*)clientSk;
-    fprintf(stdout,"thread-id: %ld    client-socket: %d\n", pthread_self(), sk);
+    fprintf(stdout,"pid: %d    thread-id: %ld    client-socket: %d\n", getpid(), pthread_self(), sk);
     while(1)
     {
         if(boolMsj){
@@ -63,6 +63,7 @@ void* funcMain(void* clientSk)
         }
     }
     pthread_exit(0);
+    return NULL;
 }
 
 int main(int argc, char **argv)
@@ -83,13 +84,10 @@ int main(int argc, char **argv)
     }
 
 
-    pthread_t *threadIds = NULL;
-    int threadsIdx=0;
+    pthread_t threadId;
     while(1){
-        threadIds = (pthread_t*)(realloc(threadIds, (threadsIdx+1) * sizeof(pthread_t)));
-        threadIds[threadsIdx]=threadsIdx;
         int clientSk = AcceptClient(mainSk);
-        pthread_create(threadIds+threadsIdx, NULL, funcMain, (void*)&clientSk);
+        pthread_create(&threadId, NULL, funcMain, (void*)&clientSk);
     }
     return 0;
 }
