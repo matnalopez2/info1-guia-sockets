@@ -16,7 +16,7 @@ void getTime(char* fechaStr, char* horaStr)
     timeTm = localtime(&tiempo);
 
     sprintf(horaStr, "%d:%d:%d", timeTm->tm_hour, timeTm->tm_min, timeTm->tm_sec);
-    sprintf(fechaStr, "%s %d de %s del %d\n", semana[timeTm->tm_wday], timeTm->tm_mday, meses[timeTm->tm_mon], timeTm->tm_year + 1900);
+    sprintf(fechaStr, "%s %d de %s del %d", semana[timeTm->tm_wday], timeTm->tm_mday, meses[timeTm->tm_mon], timeTm->tm_year + 1900);
 }
 
 int main(int argc, char **argv)
